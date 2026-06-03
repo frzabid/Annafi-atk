@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --font-poppins: 'Poppins', system-ui, sans-serif; }
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-white text-dark font-body antialiased; }
+  ::selection { @apply bg-sea/30 text-dark; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-surface; }
+  ::-webkit-scrollbar-thumb { @apply bg-ocean rounded-full; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-ocean text-white font-semibold text-sm
+           px-6 py-3 rounded-xl shadow-md transition-all duration-200
+           hover:bg-navy hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2
+           border-2 border-ocean text-ocean font-semibold text-sm
+           px-6 py-3 rounded-xl transition-all duration-200
+           hover:bg-ocean hover:text-white;
+  }
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2
+           bg-gold text-dark font-bold text-sm
+           px-6 py-3 rounded-xl transition-all duration-200
+           hover:bg-gold-dark hover:shadow-lg hover:-translate-y-0.5;
+  }
+  .card {
+    @apply bg-white rounded-xl2 shadow-card transition-all duration-200
+           hover:shadow-card-hover hover:-translate-y-1;
+  }
+  .page-container { @apply max-w-6xl mx-auto px-4 md:px-8; }
+  .section-title  { @apply text-2xl md:text-3xl font-bold text-dark; }
+  .fade-up { animation: fadeUp 0.5s ease forwards; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.stagger-2 { animation-delay: 0.10s; opacity: 0; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.stagger-4 { animation-delay: 0.20s; opacity: 0; }
+.stagger-5 { animation-delay: 0.25s; opacity: 0; }
+.stagger-6 { animation-delay: 0.30s; opacity: 0; }
+
+.slide-up { animation: slideUp 0.3s ease forwards; }
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
