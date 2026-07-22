@@ -66,3 +66,5 @@ export default async function KatalogPage({ searchParams }) {
     </div>
   )
 }
+
+export const dynamic = 'force-dynamic'
