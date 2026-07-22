@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDA — SmartPantry AI</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --card2: #21253a;
+    --border: #2a2f45;
+    --accent: #6c8eff;
+    --accent2: #ff7b54;
+    --accent3: #50e3c2;
+    --accent4: #f5c542;
+    --text: #e8eaf6;
+    --muted: #8892b0;
+    --green: #4caf93;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 32px 40px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+
+  header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  .badge {
+    margin-left: auto;
+    background: rgba(108,142,255,0.12);
+    border: 1px solid rgba(108,142,255,0.3);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+
+  /* KPI CARDS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-color, var(--accent));
+  }
+
+  .kpi .label { font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi .value { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; margin: 6px 0 2px; }
+  .kpi .sub { font-size: 12px; color: var(--muted); }
+  .kpi .icon { position: absolute; right: 18px; top: 18px; font-size: 22px; opacity: 0.4; }
+
+  /* SECTION */
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* CHART GRID */
+  .chart-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .chart-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .chart-grid-full {
+    margin-bottom: 28px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+  }
+
+  .card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .card .card-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  canvas { max-height: 260px; }
+
+  /* TABLE */
+  .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 28px; }
+  .table-card h3 { font-size: 14px; font-weight: 600; padding: 18px 22px 0; }
+  .table-card .card-sub { font-size: 12px; color: var(--muted); padding: 4px 22px 14px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { background: var(--card2); font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 22px; text-align: left; }
+  td { padding: 11px 22px; font-size: 13px; border-top: 1px solid var(--border); }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .bar-inline {
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .bar-bg {
+    flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+  }
+
+  .rank { color: var(--muted); font-size: 12px; width: 20px; }
+  .chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  /* INSIGHT BOX */
+  .insights {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .insight-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    border-left: 3px solid var(--accent-color, var(--accent));
+  }
+
+  .insight-box .i-label {
+    font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+  }
+
+  .insight-box .i-text { font-size: 13px; line-height: 1.6; color: var(--text); }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🛒</div>
+  <div>
+    <h1>SmartPantry AI — EDA Dashboard</h1>
+    <p>Kelompok 4 · Data Science & Generative AI, CAMP Batch 4</p>
+  </div>
+  <div class="badge">24.278 transaksi · Jun 2025 – Jun 2026</div>
+</header>
+
+<main>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi" style="--accent-color: var(--accent)">
+      <span class="icon">👥</span>
+      <div class="label">Total Users</div>
+      <div class="value" style="color:var(--accent)">80</div>
+      <div class="sub">Mahasiswa, kos, pekerja muda</div>
+    </div>
+    <div class="kpi" style="--accent-color: var(--accent2)">
+      <span class="icon">🧾</span>
+      <div class="label">Total Transaksi</div>
+      <div class="value" style="color:var(--accent2)">24.278</div>
+      <div class="sub">Dari stock_log</div>
+    </div>
+    <div class="kpi" style="--accent-color: var(--accent3)">
+      <span class="icon">💰</span>
+      <div class="label">Total Pengeluaran</div>
+      <div class="value" style="color:var(--accent3)">Rp 359 Jt</div>
+      <div class="sub">Seluruh kategori</div>
+    </div>
+    <div class="kpi" style="--accent-color: var(--accent4)">
+      <span class="icon">📊</span>
+      <div class="label">Rata-rata / Transaksi</div>
+      <div class="value" style="color:var(--accent4)">Rp 14.806</div>
+      <div class="sub">Per pembelian</div>
+    </div>
+  </div>
+
+  <!-- ROW 1: Monthly trend + Kategori pengeluaran -->
+  <div class="section-title">Tren & Kategori</div>
+  <div class="chart-grid-2">
+    <div class="card">
+      <h3>Tren Transaksi Bulanan</h3>
+      <div class="card-sub">Jumlah transaksi per bulan (Jun 2025 – Jun 2026)</div>
+      <canvas id="monthlyChart"></canvas>
+    </div>
+    <div class="card">
+      <h3>Total Pengeluaran per Kategori</h3>
+      <div class="card-sub">Nilai pembelian kumulatif (Rp)</div>
+      <canvas id="catChart"></canvas>
+    </div>
+  </div>
+
+  <!-- ROW 2: Top items table -->
+  <div class="section-title">Item Terpopuler</div>
+  <div class="table-card">
+    <h3>Top 10 Item Paling Sering Dibeli</h3>
+    <div class="card-sub">Berdasarkan frekuensi transaksi di stock_log</div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nama Item</th>
+          <th>Frekuensi Beli</th>
+          <th>Rata-rata Harga</th>
+          <th>Proporsi</th>
+        </tr>
+      </thead>
+      <tbody id="topItemsTable"></tbody>
+    </table>
+  </div>
+
+  <!-- ROW 3: Pie charts -->
+  <div class="section-title">Profil Pengguna</div>
+  <div class="chart-grid-3">
+    <div class="card">
+      <h3>Distribusi Persona</h3>
+      <div class="card-sub">Tipe pengguna SmartPantry</div>
+      <canvas id="personaChart"></canvas>
+    </div>
+    <div class="card">
+      <h3>Distribusi Kota</h3>
+      <div class="card-sub">Sebaran lokasi pengguna</div>
+      <canvas id="kotaChart"></canvas>
+    </div>
+    <div class="card">
+      <h3>Rata-rata Hari Habis per Kategori</h3>
+      <div class="card-sub">avg_days_to_finish aktual</div>
+      <canvas id="daysChart"></canvas>
+    </div>
+  </div>
+
+  <!-- INSIGHT BOXES -->
+  <div class="section-title">Key Insights</div>
+  <div class="insights">
+    <div class="insight-box" style="--accent-color: var(--accent)">
+      <div class="i-label">🏆 Item Dominan</div>
+      <div class="i-text"><strong>Kopi Sachet</strong> adalah item paling sering dibeli (7.540x), hampir 2x lipat Mie Instan. Cocok dijadikan starter item untuk user baru.</div>
+    </div>
+    <div class="insight-box" style="--accent-color: var(--accent2)">
+      <div class="i-label">💸 Kategori Mahal</div>
+      <div class="i-text"><strong>Makanan pokok</strong> mendominasi total pengeluaran (Rp 174 jt) meski <strong>bumbu_minyak</strong> lebih banyak transaksinya. Harga per unit makanan pokok lebih tinggi.</div>
+    </div>
+    <div class="insight-box" style="--accent-color: var(--accent3)">
+      <div class="i-label">👤 Target User</div>
+      <div class="i-text"><strong>Mahasiswa</strong> mendominasi (47.5%), diikuti kos_bersama (27.5%) dan pekerja_muda (25%). Mayoritas dari <strong>Bandung & Jakarta</strong>.</div>
+    </div>
+    <div class="insight-box" style="--accent-color: var(--accent4)">
+      <div class="i-label">📅 Pola Konsumsi</div>
+      <div class="i-text"><strong>Bumbu & makanan pokok</strong> habis dalam ~10 hari. Sementara <strong>kesehatan & kebersihan diri</strong> bertahan 40–50 hari. Frekuensi restock berbeda jauh.</div>
+    </div>
+    <div class="insight-box" style="--accent-color: var(--green)">
+      <div class="i-label">📈 Tren Bulanan</div>
+      <div class="i-text">Transaksi stabil di <strong>1.800–2.100/bulan</strong> sepanjang tahun. Puncak di Mei 2026 (2.110) dan Desember 2025 (2.071). Data Jun 2026 parsial.</div>
+    </div>
+    <div class="insight-box" style="--accent-color: #b06aff">
+      <div class="i-label">🤖 Implikasi ML</div>
+      <div class="i-text">Dengan 24K+ baris stock_log dan pola konsumsi berbeda per kategori, model <strong>forecasting habis stok</strong> bisa dilatih per item/user dengan data yang cukup.</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>SmartPantry AI · Kelompok 4 · DSGA CAMP Batch 4 · Data di-generate sintetis via Python + psycopg2</footer>
+
+<script>
+const MONTHLY = [{"bulan":"2025-06","total_transaksi":1505,"total_pengeluaran":29491500},{"bulan":"2025-07","total_transaksi":2007,"total_pengeluaran":26070000},{"bulan":"2025-08","total_transaksi":2066,"total_pengeluaran":30125000},{"bulan":"2025-09","total_transaksi":2043,"total_pengeluaran":29121500},{"bulan":"2025-10","total_transaksi":2039,"total_pengeluaran":28149500},{"bulan":"2025-11","total_transaksi":2018,"total_pengeluaran":29251500},{"bulan":"2025-12","total_transaksi":2071,"total_pengeluaran":29382000},{"bulan":"2026-01","total_transaksi":2035,"total_pengeluaran":30462500},{"bulan":"2026-02","total_transaksi":1837,"total_pengeluaran":28279500},{"bulan":"2026-03","total_transaksi":1910,"total_pengeluaran":32399000},{"bulan":"2026-04","total_transaksi":1951,"total_pengeluaran":27201500},{"bulan":"2026-05","total_transaksi":2110,"total_pengeluaran":28896500},{"bulan":"2026-06","total_transaksi":686,"total_pengeluaran":10632000}];
+
+const CATEGORY = [{"category":"makanan_pokok","total_transaksi":8279,"total_pengeluaran":174240500},{"category":"bumbu_minyak","total_transaksi":9484,"total_pengeluaran":59117000},{"category":"kebersihan_diri","total_transaksi":2106,"total_pengeluaran":48291500},{"category":"kebersihan_rumah","total_transaksi":3061,"total_pengeluaran":43486500},{"category":"minuman","total_transaksi":1058,"total_pengeluaran":24800000},{"category":"kesehatan","total_transaksi":290,"total_pengeluaran":9526500}];
+
+const TOP_ITEMS = [{"item_name":"Kopi Sachet","frekuensi":7540,"avg_harga":2515},{"item_name":"Mie Instan","frekuensi":5042,"avg_harga":3560},{"item_name":"Telur 1kg","frekuensi":2022,"avg_harga":27402},{"item_name":"Tisu Gulung","frekuensi":1777,"avg_harga":6120},{"item_name":"Air Galon","frekuensi":748,"avg_harga":21368},{"item_name":"Sabun Mandi","frekuensi":704,"avg_harga":8144},{"item_name":"Saus Sambal","frekuensi":613,"avg_harga":10276},{"item_name":"Sampo","frekuensi":611,"avg_harga":25571},{"item_name":"Beras 5kg","frekuensi":594,"avg_harga":71458},{"item_name":"Minyak Goreng 1L","frekuensi":554,"avg_harga":20699}];
+
+const PERSONA = [{"persona":"mahasiswa","count":38},{"persona":"kos_bersama","count":22},{"persona":"pekerja_muda","count":20}];
+const KOTA = [{"city":"Bandung","count":18},{"city":"Jakarta","count":15},{"city":"Surabaya","count":14},{"city":"Malang","count":10},{"city":"Yogyakarta","count":6},{"city":"Bali","count":6},{"city":"Semarang","count":6},{"city":"Medan","count":5}];
+const DAYS = [{"category":"bumbu_minyak","avg_days":10.5},{"category":"makanan_pokok","avg_days":9.6},{"category":"minuman","avg_days":19.5},{"category":"kebersihan_rumah","avg_days":21.5},{"category":"kebersihan_diri","avg_days":40.1},{"category":"kesehatan","avg_days":49.7}];
+
+const COLORS = ['#6c8eff','#ff7b54','#50e3c2','#f5c542','#b06aff','#4caf93','#ff6b9d','#36c0e8'];
+const grid = { color: 'rgba(255,255,255,0.05)' };
+const tickStyle = { color: '#8892b0', font: { size: 11 } };
+
+// Monthly Chart
+new Chart(document.getElementById('monthlyChart'), {
+  type: 'bar',
+  data: {
+    labels: MONTHLY.map(d => d.bulan.replace('2025-','').replace('2026-','') + (d.bulan.startsWith('2026') ? "'26" : "'25")),
+    datasets: [{
+      label: 'Transaksi',
+      data: MONTHLY.map(d => d.total_transaksi),
+      backgroundColor: MONTHLY.map((d,i) => i === 12 ? 'rgba(108,142,255,0.3)' : 'rgba(108,142,255,0.7)'),
+      borderRadius: 5,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid, ticks: tickStyle },
+      y: { grid, ticks: tickStyle }
+    }
+  }
+});
+
+// Category Chart
+new Chart(document.getElementById('catChart'), {
+  type: 'bar',
+  data: {
+    labels: CATEGORY.map(d => d.category),
+    datasets: [{
+      label: 'Total Pengeluaran',
+      data: CATEGORY.map(d => d.total_pengeluaran / 1000000),
+      backgroundColor: COLORS,
+      borderRadius: 5,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { display: false },
+      tooltip: { callbacks: { label: ctx => `Rp ${ctx.raw.toFixed(1)} Jt` } }
+    },
+    scales: {
+      x: { grid, ticks: { ...tickStyle, callback: v => `${v}Jt` } },
+      y: { grid, ticks: tickStyle }
+    }
+  }
+});
+
+// Top Items Table
+const tbody = document.getElementById('topItemsTable');
+const maxF = TOP_ITEMS[0].frekuensi;
+TOP_ITEMS.forEach((item, i) => {
+  const pct = (item.frekuensi / maxF * 100).toFixed(0);
+  const color = COLORS[i % COLORS.length];
+  tbody.innerHTML += `<tr>
+    <td><span class="rank">${i+1}</span></td>
+    <td><strong>${item.item_name}</strong></td>
+    <td>${item.frekuensi.toLocaleString('id-ID')}</td>
+    <td>Rp ${item.avg_harga.toLocaleString('id-ID')}</td>
+    <td>
+      <div class="bar-inline">
+        <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+        <span style="font-size:11px;color:#8892b0;width:32px">${pct}%</span>
+      </div>
+    </td>
+  </tr>`;
+});
+
+// Persona
+new Chart(document.getElementById('personaChart'), {
+  type: 'doughnut',
+  data: {
+    labels: PERSONA.map(d => d.persona),
+    datasets: [{ data: PERSONA.map(d => d.count), backgroundColor: ['#6c8eff','#ff7b54','#50e3c2'], borderWidth: 0, hoverOffset: 6 }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { color: '#8892b0', font: { size: 11 }, padding: 12, boxWidth: 12 } }
+    }
+  }
+});
+
+// Kota
+new Chart(document.getElementById('kotaChart'), {
+  type: 'doughnut',
+  data: {
+    labels: KOTA.map(d => d.city),
+    datasets: [{ data: KOTA.map(d => d.count), backgroundColor: COLORS, borderWidth: 0, hoverOffset: 6 }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { color: '#8892b0', font: { size: 11 }, padding: 8, boxWidth: 12 } }
+    }
+  }
+});
+
+// Days
+new Chart(document.getElementById('daysChart'), {
+  type: 'bar',
+  data: {
+    labels: DAYS.map(d => d.category),
+    datasets: [{
+      label: 'Avg Hari',
+      data: DAYS.map(d => d.avg_days),
+      backgroundColor: COLORS,
+      borderRadius: 5,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { display: false },
+      tooltip: { callbacks: { label: ctx => `${ctx.raw} hari` } }
+    },
+    scales: {
+      x: { grid, ticks: { ...tickStyle, callback: v => `${v}h` } },
+      y: { grid, ticks: tickStyle }
+    }
+  }
+});
+</script>
+</body>
+</html>

@@ -122,13 +122,20 @@ export default function HomePage() {
             <div className="card p-8">
               {/* ── DESKRIPSI TOKO — ganti teks ini ── */}
               <p className="text-muted text-center leading-relaxed mb-8 italic">
-                ✏️ Ganti teks ini dengan deskripsi singkat tentang toko kamu — apa yang dijual, keunggulan, dan kenapa pelanggan harus memilih kamu.
+                Annafi Print menyediakan berbagai kebutuhan Anda dalam satu tempat. Kami menjual produk jasa print, ATK (Alat Tulis Kantor), aksesoris, mainan, hingga sembako dengan pilihan yang lengkap dan berkualitas.
+
+✨ Keunggulan kami:
+
+Harga terjangkau dan bersaing.
+Pelayanan cepat, ramah, dan responsif.
+Produk lengkap untuk kebutuhan sehari-hari.
+
+
+🎉 Jangan lewatkan promo menarik yang tersedia pada periode tertentu. Hubungi kami sekarang untuk informasi produk, stok, harga, dan promo terbaru. Kami siap melayani kebutuhan Anda dengan sepenuh hati!
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {[
-                  { icon:'📱', label:'WhatsApp',  value:'62XXXXXXXXXX',           href:`https://wa.me/${waNumber}`,                  color:'bg-green/10 text-green' },
-                  { icon:'📸', label:'Instagram', value:'@nama_instagram',         href:'https://instagram.com/nama_instagram',        color:'bg-purple/10 text-purple' },
-                  { icon:'👍', label:'Facebook',  value:'Nama Facebook',           href:'https://facebook.com',                        color:'bg-ocean/10 text-ocean' },
+                  { icon:'📱', label:'WhatsApp',  value:'+62 895-1208-5529',           href:`https://wa.me/${waNumber}`,                  color:'bg-green/10 text-green' },
                   { icon:'📍', label:'Alamat',    value:'Isi alamat toko di sini', href:null,                                          color:'bg-coral/10 text-coral' },
                   { icon:'🕐', label:'Jam Buka',  value:'Senin–Sabtu: 06.00–21.00, Minggu: 07.00-21.00',href:null,                                          color:'bg-gold/20 text-dark' },
                 ].map((item) => (
